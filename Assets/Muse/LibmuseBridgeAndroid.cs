@@ -13,7 +13,7 @@ public class LibmuseBridgeAndroid : LibmuseBridge {
         unityMainActivity = unityJavaClass.GetStatic<AndroidJavaObject>("currentActivity");
 
         // Used to call member method
-        libmuseObj = new AndroidJavaObject("com.choosemuse.example.unity.LibmuseUnityAndroid", unityMainActivity); 
+        libmuseObj = new AndroidJavaObject("com.jurkco.GameNani", unityMainActivity); 
     }
 
 

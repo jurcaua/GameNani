@@ -60,11 +60,26 @@ public class SampleApp : MonoBehaviour {
     // Use this for initialization
     void Start () {
 
+        /*
+        if (GAME.IsMobile) {
+            if (GAME.IsAndroid) {
+                muse = new LibmuseBridgeAndroid();
+            } else {
+                muse = new LibmuseBridgeIos();
+            }
+            Debug.Log("Libmuse version = " + muse.getLibmuseVersion());
+        } else {
+            Debug.Log("Not on mobile! Muse not initialized!");
+        }*/
+
+        /*
 #if UNITY_IPHONE
         muse = new LibmuseBridgeIos();
 #elif UNITY_ANDROID
         muse = new LibmuseBridgeAndroid();
-#endif
+#endif*/
+        muse = new LibmuseBridgeAndroid();
+
         Debug.Log("Libmuse version = " + muse.getLibmuseVersion());
 
         userPickedMuse = "";
