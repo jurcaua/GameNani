@@ -64,6 +64,7 @@ public class Looker : MonoBehaviour {
 			devModeText.text = "";
 		} else {
 			foreach (Canvas cv in canvases) {
+				cv.GetComponent<Animator> ().SetTrigger ("Dev");
 				cv.gameObject.SetActive (true);
 			}
 			devModeText.text = "DevMode activated for Look";
