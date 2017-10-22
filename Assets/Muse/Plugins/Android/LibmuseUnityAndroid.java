@@ -145,7 +145,9 @@ public class LibmuseUnityAndroid {
     }
 
     public void startListening() {
+		UnityPlayer.UnitySendMessage("BetterCanvas", "SetDebugText", "I am listening");
         if(unityMuseListener.size() > 0) {
+			UnityPlayer.UnitySendMessage("BetterCanvas", "SetDebugText", "size is greater than 0");
             // Start listening for nearby or paired Muse headbands. We call stopListening
             // first to make sure startListening will clear the list of headbands and start fresh.
             manager.stopListening();
