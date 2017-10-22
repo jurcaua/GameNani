@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
+using UnityEditor;
 
 public class Looker : MonoBehaviour {
 
@@ -13,55 +15,118 @@ public class Looker : MonoBehaviour {
 
 	//canvas
 	public Canvas canvas;
-	public Canvas c;
+	private Canvas c;
+	public List<Canvas> canvases;
 
+	public KeyCode key;
+
+	public bool devMode;
+	public Text devModeText;
+
+	public string path;
 	// Use this for initialization
 	void Start () {
 		timer = 0;
+		canvases = new List<Canvas> ();
+		devMode = false;
 	}
-	
+
+	void Switch() {
+		devMode = !devMode;
+		if (!devMode) {
+			foreach (Canvas cv in canvases) {
+				cv.gameObject.SetActive (false);
+			}
+			devModeText.text = "";
+		} else {
+			foreach (Canvas cv in canvases) {
+				cv.gameObject.SetActive (true);
+			}
+			devModeText.text = "DevMode activated for Look";
+		}
+
+	}
+
 	// Update is called once per frame
 	void Update () {
+
+		if (Input.GetKeyDown (key)) {
+			Switch ();
+		}
+
+		if (Input.GetKeyDown (KeyCode.P)) {
+			PrintData ();
+		}
+
 		Debug.DrawRay (transform.position, transform.forward * raylength, Color.red, 0f);
 
 		Ray ray = new Ray (transform.position, transform.forward);
 		if (Physics.Raycast (ray, out vision, raylength, LayerMask.GetMask("Observable", "Default"))) {
-			if (vision.collider.gameObject.layer == LayerMask.NameToLayer("Observable")) {
+			if (vision.collider.gameObject.layer == LayerMask.NameToLayer ("Observable")) {
 				if (vision.collider.gameObject == previous) {
 					//time it
 					timer += Time.deltaTime;
-					if (LookDataManager.addObject (previous, Time.deltaTime) == 0) {
-						//first time setup
-						c = Instantiate(canvas, previous.transform);
-						c.GetComponent<LookatPlayer> ().oname = previous.name;
-						c.GetComponent<LookatPlayer> ().data = LookDataManager.dictionary[previous.name];
-					}
-					LookDataManager.dictionary [previous.name].GetAverageWhile(timer);
+					LookDataManager.addObject (previous, Time.deltaTime);
+					LookDataManager.dictionary [previous.name].GetAverageWhile (timer);
 				} else {
 					if (previous != null) {
 						Debug.Log ("Looked at: " + previous.name + " for " + timer + "secs");
+						LookDataManager.dictionary [previous.name].UpdateAverage (timer);
 						timer = 0;
 					}
+
 					previous = vision.collider.gameObject;
 
+					if (previous != null) {
+						if (LookDataManager.addObject (previous, 0) == 0) {
+							//first time setup
+							c = Instantiate (canvas);
+							c.GetComponent<LookatPlayer> ().parent = previous;
+							c.GetComponent<LookatPlayer> ().oname = previous.name;
+							c.GetComponent<LookatPlayer> ().data = LookDataManager.dictionary [previous.name];
+							canvases.Add (c);
+
+							if (!devMode) {
+								c.gameObject.SetActive (false);
+							}
+						}
+						LookDataManager.dictionary [previous.name].lookedAt++;
+					}
 
 				}
 
+			} else if (previous != null){
+				//non observable object
+				Debug.Log ("Looked at: " + previous.name + " for " + timer + "secs");
+
+				LookDataManager.dictionary [previous.name].UpdateAverage (timer);
+
+				previous = null;
+				timer = 0;
 			}
+
 		}
 		else if (previous != null){
 			Debug.Log ("Looked at: " + previous.name + " for " + timer + "secs");
 
-			LookDataManager.dictionary [previous.name].UpdateAverage(timer);
-//			if (LookDataManager.addObject (previous, timer) == 0) {
-//				//first time setup
-//				Canvas c = Instantiate(canvas, previous.transform);
-//				c.GetComponent<LookatPlayer> ().oname = previous.name;
-//				c.GetComponent<LookatPlayer> ().data = LookDataManager.dictionary [previous.name];
-//			}
+			LookDataManager.dictionary [previous.name].UpdateAverage (timer);
 
 			previous = null;
 			timer = 0;
 		}
 	}
+
+	public void PrintData() {
+		string json = JsonUtility.ToJson (new PrintableData(LookDataManager.dictionary));
+		Debug.Log (json);
+
+		StreamWriter writer0 = new StreamWriter (path, false);
+		writer0.WriteLine (json);
+		writer0.Close();
+
+		AssetDatabase.ImportAsset (path);
+		TextAsset asset = (TextAsset) Resources.Load ("test");
+	}
+
+
 }

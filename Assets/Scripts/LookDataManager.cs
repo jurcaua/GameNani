@@ -2,6 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class PrintableData {
+	
+	public List<string> keys;
+	public List<LookData> lookDatas;
+	public PrintableData(Dictionary<string, LookData> d) {
+		keys = new List<string> (d.Keys);
+		lookDatas = new List<LookData> ();
+		foreach (string k in keys) {
+			lookDatas.Add (d [k]);
+		}
+	}
+}
+
 public static class LookDataManager {
 	
 	public static Dictionary<string, LookData> dictionary = new Dictionary<string, LookData>();
@@ -27,17 +41,21 @@ public static class LookDataManager {
 
 }
 
+[System.Serializable]
 public class LookData {
 
 	public float TotalTime;
 	public float averageTime;
 	public List<LookSession> list;
+	public int lookedAt;
 
 	public LookData(float duration) {
 		TotalTime = duration;
 		averageTime = duration;
 		list = new List<LookSession> ();
-		list.Add (new LookSession (duration));
+		if (duration > 0) {
+			list.Add (new LookSession (duration));
+		}
 	}
 
 	public void UpdateTotal() {
@@ -46,7 +64,7 @@ public class LookData {
 	}
 
 	public void GetAverageWhile(float duration) {
-		float avg = 0; int i = -1;
+		float avg = 0; int i = 0;
 		foreach (LookSession l in list) {
 			avg += l.duration;
 			i++;
@@ -59,19 +77,23 @@ public class LookData {
 	}
 
 	public void UpdateAverage(float duration) {
-		list.Add (new LookSession (duration));
+		if (duration > 0) {
+			list.Add (new LookSession (duration));
 
-		float avg = 0; int i = -1;
-		foreach (LookSession l in list) {
-			avg += l.duration;
-			i++;
+			float avg = 0;
+			int i = 0;
+			foreach (LookSession l in list) {
+				avg += l.duration;
+				i++;
+			}
+			averageTime = avg / i ;
+			TotalTime = avg;
 		}
-		averageTime = avg / i;
-		TotalTime = avg;
 		Debug.Log ("total time: " + TotalTime + " average time: " + averageTime);
 	}
 }
 
+[System.Serializable]
 public class LookSession {
 	public float start;
 	public float end;
