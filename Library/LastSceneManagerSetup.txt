@@ -1,0 +1,4 @@
+sceneSetups:
+- path: Assets/_Scenes/FPS.unity
+  isLoaded: 0
+  isActive: 0
