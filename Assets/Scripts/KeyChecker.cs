@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class KeyChecker : MonoBehaviour {
 
 	[Header("Debugging")]
-    public KeyCode debugKey;
+    public KeyCode debugKey = KeyCode.K;
+    public KeyCode restartKey = KeyCode.R;
     public bool checkAllKeys = false;
 
 	[TextArea(3, 10)]

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
-using UnityEditor;
+using UnityEngine.SceneManagement;
 
 public class Looker : MonoBehaviour {
 
@@ -24,6 +24,7 @@ public class Looker : MonoBehaviour {
 	List<Canvas> canvases;
 
 	public KeyCode DebugKey;
+    public KeyCode RestartKey = KeyCode.R;
 
 	bool devMode;
 	Text devModeText;
@@ -83,7 +84,12 @@ public class Looker : MonoBehaviour {
 			PrintData ();
 		}
 
-		Debug.DrawRay (transform.position, transform.forward * maxDistance, Color.red, 0f);
+        if (Input.GetKeyDown(RestartKey)) {
+            PrintData();
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
+        Debug.DrawRay (transform.position, transform.forward * maxDistance, Color.red, 0f);
 
 		Ray ray = new Ray (transform.position, transform.forward);
 		if (Physics.Raycast (ray, out vision, maxDistance, LayerMask.GetMask("Observable", "Default"))) {
