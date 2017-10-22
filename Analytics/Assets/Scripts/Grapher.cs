@@ -17,78 +17,24 @@ public class Grapher : MonoBehaviour {
     private List<Vector3> points = new List<Vector3>();
     private LineRenderer[] r;
 
+	float minX;
+	float maxX;
+	float minY;
+	float maxY;
+
     void Start() {
 
         r = GetComponentsInChildren<LineRenderer>();
-
-        //CreatePoints();
-
-
-        //Graph("x", lookSessions.Count)
-    }
-
-    void Update() {
-        /*
-        if (currentResolution != resolution || points == null) {
-            CreatePoints();
-        }
-
-        FunctionDelegate f = functionDelegates[(int)function];
-        for (int i = 0; i < resolution; i++) {
-            Vector3 p = points[i].position;
-            p.y = f(p.x);
-            points[i].position = p;
-            Color c = points[i].startColor;
-            c.g = p.y;
-            points[i].startColor = c;
-        }
-        p.SetParticles(points, points.Length);
-        */
-    }
-    
-    public void CreatePoints() {
-
-        for (int rendIndex = 0; rendIndex < r.Length; rendIndex++) {
-
-            List<string> objects = new List<string>(DATA.sessions[0].lookData.dictionary.Keys);
-
-            List<LookData> data = new List<LookData>();
-            Debug.Log(objects.Count);
-            if (objects.Count > 0) {
-                string tempObj = objects[0];
-                Debug.Log(tempObj);
-
-                foreach (Session s in DATA.sessions) {
-                    if (s.lookData.dictionary.ContainsKey(tempObj)) {
-                        data.Add(s.lookData.dictionary[tempObj]);
-                    }
-                }
-                Debug.Log(data.Count);
-
-                float[] x = new float[data.Count];
-                float[] y = new float[data.Count];
-
-                for (int i = 0; i < data.Count; i++) {
-                    x[i] = i;
-
-                    if (rendIndex == 0) {
-                        y[i] = data[i].averageTime;
-                        Debug.Log(i + " -- " + r[rendIndex].name);
-                    } else if (rendIndex == 1) {
-                        y[i] = data[i].TotalTime;
-                        Debug.Log(i + " -- " + r[rendIndex].name);
-                    } else if (rendIndex == 2) {
-                        y[i] = data[i].lookedAt;
-                        Debug.Log(i + " -- " + r[rendIndex].name);
-                    }
-                }
-
-                Graph(r[rendIndex], "Session", x, "Value", y, rendIndex);
-            }
-        }
     }
 
     public void CreateObjectPoints(string objectName) {
+
+		float[] minXs = new float[3];
+		float[] maxXs = new float[3];
+		float[] minYs = new float[3];
+		float[] maxYs = new float[3];
+
+		Graphable[] toGraph = new Graphable[3];
 
         r[0].gameObject.SetActive(true);
         legendItems[0].SetActive(true);
@@ -100,6 +46,8 @@ public class Grapher : MonoBehaviour {
         legendItems[2].SetActive(true);
         legendItems[2].GetComponentInChildren<Text>().text = "Times Looked At (# of times)";
 
+
+		Debug.Log ("LENGTH LEGNTH: " + r.Length);
         for (int rendIndex = 0; rendIndex < r.Length; rendIndex++) {
 
             List<LookData> data = new List<LookData>();
@@ -125,11 +73,44 @@ public class Grapher : MonoBehaviour {
                 } else if (rendIndex == 2) {
                     y[i] = data[i].lookedAt;
                 }
+				PrintArray (y);
             }
 
-            Graph(r[rendIndex], "Session", x, "", y, rendIndex);
+			minXs[rendIndex] = Min (x);
+			maxXs[rendIndex] = Max (x);
+			minYs[rendIndex] = Min (y);
+			maxYs[rendIndex] = Max (y);
+
+			toGraph [rendIndex] = new Graphable (r[rendIndex], "Session", x, "", y, rendIndex);
+
+
+            //Graph(r[rendIndex], "Session", x, "", y, rendIndex);
         }
+
+		minX = Min (minXs);
+		maxX = Max (maxXs);
+		minY = Min (minYs);
+		maxY = Min (maxYs);
+
+		yMin.text = minY.ToString();
+		yMax.text = maxY.ToString();
+
+		Debug.Log ("X:" + minX + ", " + maxX + " --- Y:" + minY + ", " + maxY);
+
+		for (int i = 0; i < toGraph.Length; i++) {
+			Graphable g = toGraph[i];
+			Graph (g.line, g.xLabel, g.x, g.yLabel, g.y, g.z);
+		}
     }
+
+	void PrintArray(float[] A){
+		string temp = "Array: [";
+		foreach (float f in A) {
+			temp += f.ToString() + ", ";
+			temp += "]";
+		}
+		Debug.Log (temp);
+	}
 
     public void CreateKeyCodePoints(KeyCode keycode) {
 
@@ -138,7 +119,7 @@ public class Grapher : MonoBehaviour {
         legendItems[0].GetComponentInChildren<Text>().text = "Longest Hold (s)";
         r[1].gameObject.SetActive(true);
         legendItems[1].SetActive(true);
-        legendItems[1].GetComponentInChildren<Text>().text = "# of Time Pressed";
+        legendItems[1].GetComponentInChildren<Text>().text = "# of Times Pressed";
         r[2].gameObject.SetActive(false);
         legendItems[2].SetActive(false);
 
@@ -196,10 +177,11 @@ public class Grapher : MonoBehaviour {
         }
 
         resolution = x.Length;
+					/*
         float minX = Min(x);
         float maxX = Max(x);
         float minY = Min(y);
-        float maxY = Max(y);
+        float maxY = Max(y);*/
 
         points.Clear();
         for (int i = 0; i < resolution; i++) {
@@ -212,15 +194,20 @@ public class Grapher : MonoBehaviour {
 
             points.Add(newPoint);
         }
+		if (points.Count == 1) {
+			Vector3 cornerCase = new Vector3();
+
+			cornerCase.x = 1f * wideMult - xShift;
+			cornerCase.y = points[0].y;
+			cornerCase.z = z;
+
+			points.Add(cornerCase);
+		}
+
         line.positionCount = points.Count;
         line.SetPositions(points.ToArray());
 
         xAxis.text = xLabel;
-        yMin.text = minY.ToString();
-        yMax.text = maxY.ToString();
-
-
-
     }
 
     float Max(float[] list) {
@@ -246,4 +233,23 @@ public class Grapher : MonoBehaviour {
         }
         return min;
     }
+}
+
+public class Graphable{
+
+	public LineRenderer line;
+	public string xLabel;
+	public float[] x;
+	public string yLabel;
+	public float[] y;
+	public float z;
+
+	public Graphable(LineRenderer _line, string _xLabel, float[] _x, string _yLabel, float[] _y, float _z){
+		line = _line;
+		xLabel = _xLabel;
+		x = _x;
+		yLabel = _yLabel;
+		y = _y;
+		z = _z;
+	}
 }

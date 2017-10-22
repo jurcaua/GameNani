@@ -11,7 +11,7 @@ public class ButtonScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		bottom = GameObject.Find ("ScrollContent");
+		bottom = GameObject.Find ("SessionsContent");
 	}
 	
 	// Update is called once per frame

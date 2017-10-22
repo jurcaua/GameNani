@@ -89,6 +89,15 @@ public class Looker : MonoBehaviour {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
+		if (Input.GetKeyDown(KeyCode.Q)) {
+			Ray setRay = new Ray (transform.position, transform.forward);
+			if (Physics.Raycast (setRay, out vision, maxDistance)) {
+				if (vision.collider.gameObject.layer != LayerMask.NameToLayer ("Observable")) {
+					vision.collider.gameObject.layer = LayerMask.NameToLayer ("Observable");
+				}
+			}
+		}
+
         Debug.DrawRay (transform.position, transform.forward * maxDistance, Color.red, 0f);
 
 		Ray ray = new Ray (transform.position, transform.forward);
