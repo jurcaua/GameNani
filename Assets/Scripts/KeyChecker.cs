@@ -58,9 +58,9 @@ public class KeyChecker : MonoBehaviour {
     }
 
     void OnApplicationQuit() {
-        WWWForm form = new WWWForm();
-        form.AddField
-        HTTP.Sync.POST("localhost",);
+//        WWWForm form = new WWWForm();
+//		form.AddField;
+        //HTTP.Sync.POST("localhost",);
     }
 }
 

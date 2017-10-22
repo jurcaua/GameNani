@@ -42,7 +42,7 @@ public class Looker : MonoBehaviour {
 			Directory.CreateDirectory (pathDir);
 		}
 
-		sessionNumber = Directory.GetFiles (pathDir).Length;
+		sessionNumber = Directory.GetFiles (pathDir).Length + 1;
 	}
 
 	void Switch() {
@@ -134,13 +134,12 @@ public class Looker : MonoBehaviour {
 		string json = JsonUtility.ToJson (new PrintableData(LookDataManager.dictionary, gameName, dateTime));
 		Debug.Log (json);
 
-		StreamWriter writer0 = new StreamWriter (pathDir + "test", false);
+		StreamWriter writer0 = new StreamWriter (pathDir + "session" + sessionNumber + ".JSON", false);
 		writer0.WriteLine (json);
 		writer0.Close();
-
-		AssetDatabase.ImportAsset (pathDir + "test");
-		TextAsset asset = (TextAsset) Resources.Load ("test");
 	}
 
-
+	void OnApplicationQuit() {
+		PrintData ();
+	}
 }
