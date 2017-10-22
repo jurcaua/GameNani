@@ -4,10 +4,16 @@ using UnityEngine;
 
 [System.Serializable]
 public class PrintableData {
-	
+
+	public string gameName;
+	public string dateTime;
 	public List<string> keys;
 	public List<LookData> lookDatas;
-	public PrintableData(Dictionary<string, LookData> d) {
+
+
+	public PrintableData(Dictionary<string, LookData> d, string gn, string datetime) {
+		gameName = gn;
+		dateTime = datetime;
 		keys = new List<string> (d.Keys);
 		lookDatas = new List<LookData> ();
 		foreach (string k in keys) {

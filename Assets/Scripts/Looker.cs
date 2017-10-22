@@ -23,12 +23,26 @@ public class Looker : MonoBehaviour {
 	public bool devMode;
 	public Text devModeText;
 
-	public string path;
+	public string pathDir;
+
+	public string gameName;
+	public string dateTime;
+	public int sessionNumber;
 	// Use this for initialization
 	void Start () {
 		timer = 0;
 		canvases = new List<Canvas> ();
 		devMode = false;
+		dateTime = System.DateTime.Now.ToString();
+		pathDir = Application.persistentDataPath + "/GameNani/LoadData/";
+
+		Debug.Log (pathDir);
+
+		if (!Directory.Exists (pathDir)) {
+			Directory.CreateDirectory (pathDir);
+		}
+
+		sessionNumber = Directory.GetFiles (pathDir).Length;
 	}
 
 	void Switch() {
@@ -117,14 +131,14 @@ public class Looker : MonoBehaviour {
 	}
 
 	public void PrintData() {
-		string json = JsonUtility.ToJson (new PrintableData(LookDataManager.dictionary));
+		string json = JsonUtility.ToJson (new PrintableData(LookDataManager.dictionary, gameName, dateTime));
 		Debug.Log (json);
 
-		StreamWriter writer0 = new StreamWriter (path, false);
+		StreamWriter writer0 = new StreamWriter (pathDir + "test", false);
 		writer0.WriteLine (json);
 		writer0.Close();
 
-		AssetDatabase.ImportAsset (path);
+		AssetDatabase.ImportAsset (pathDir + "test");
 		TextAsset asset = (TextAsset) Resources.Load ("test");
 	}
 
