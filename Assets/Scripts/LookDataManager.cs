@@ -9,7 +9,7 @@ public class PrintableData {
 	public string dateTime;
 	public List<string> keys;
 	public List<LookData> lookDatas;
-
+	public PrintableKeyPressData keyPressData;
 
 	public PrintableData(Dictionary<string, LookData> d, string gn, string datetime) {
 		gameName = gn;
@@ -19,6 +19,7 @@ public class PrintableData {
 		foreach (string k in keys) {
 			lookDatas.Add (d [k]);
 		}
+		keyPressData = new PrintableKeyPressData (KeyPressDataManager.dictionary);
 	}
 }
 
@@ -54,6 +55,8 @@ public class LookData {
 	public float averageTime;
 	public List<LookSession> list;
 	public int lookedAt;
+
+
 
 	public LookData(float duration) {
 		TotalTime = duration;

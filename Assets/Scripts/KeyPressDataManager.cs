@@ -3,6 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+[System.Serializable]
+public class PrintableKeyPressData {
+	public List<KeyCode> keycodes;
+	public List<Keydata> keydatas;
+
+	public PrintableKeyPressData(Dictionary<KeyCode, Keydata> dictionary) {
+		keycodes = new List<KeyCode> (dictionary.Keys);
+		keydatas = new List<Keydata> ();
+		foreach (KeyCode k in keycodes) {
+			keydatas.Add (dictionary [k]);
+		}
+	}
+}
+
 public static class KeyPressDataManager {
 
     public static Dictionary<KeyCode, Keydata> dictionary = new Dictionary<KeyCode, Keydata>();
@@ -46,6 +60,7 @@ public static class KeyPressDataManager {
     }
 }
 
+[System.Serializable]
 public class Keydata {
 
     // the regular data
