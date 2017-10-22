@@ -19,7 +19,6 @@ public static class LookDataManager {
 			return 0;
 		} else  {
 			dictionary [e.name].UpdateTotal ();
-			Debug.Log ("total time: " + dictionary [e.name].TotalTime + " average time: " + dictionary [e.name].averageTime);
 			return 1;
 		}
 
@@ -68,6 +67,8 @@ public class LookData {
 			i++;
 		}
 		averageTime = avg / i;
+		TotalTime = avg;
+		Debug.Log ("total time: " + TotalTime + " average time: " + averageTime);
 	}
 }
 

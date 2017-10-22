@@ -24,7 +24,8 @@ public class Looker : MonoBehaviour {
 	void Update () {
 		Debug.DrawRay (transform.position, transform.forward * raylength, Color.red, 0f);
 
-		if (Physics.Raycast (transform.position, transform.forward, out vision, raylength)) {
+		Ray ray = new Ray (transform.position, transform.forward);
+		if (Physics.Raycast (ray, out vision, raylength, LayerMask.GetMask("Observable", "Default"))) {
 			if (vision.collider.gameObject.layer == LayerMask.NameToLayer("Observable")) {
 				if (vision.collider.gameObject == previous) {
 					//time it
