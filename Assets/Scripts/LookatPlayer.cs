@@ -15,7 +15,7 @@ public class LookatPlayer : MonoBehaviour {
 	void Update () {
 		transform.LookAt (Camera.main.transform);
 
-		transform.position = parent.transform.position + new Vector3 (0, height + parent.GetComponent<Renderer> ().bounds.size.y / 2 , 0);
+		transform.position = parent.transform.position + new Vector3 (0, height + parent.GetComponent<Renderer> ().bounds.size.y , 0);
 		transform.GetChild (0).GetComponent<TextMeshProUGUI> ().text = string.Format ("{0}\n<size=10>Total: {1}\nAverage: {2}\nLookedAt#: {3}</size=10>",
 			oname, data.TotalTime.ToString ("F2"), data.averageTime.ToString ("F2"), data.lookedAt);
 	}
