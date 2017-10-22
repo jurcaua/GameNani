@@ -7,27 +7,34 @@ using UnityEditor;
 
 public class Looker : MonoBehaviour {
 
-	private RaycastHit vision;
-	public float raylength;
-
-	public GameObject previous;
-	public float timer;
-
-	//canvas
-	public Canvas canvas;
-	private Canvas c;
-	public List<Canvas> canvases;
-
-	public KeyCode key;
-
-	public bool devMode;
-	public Text devModeText;
-
-	public string pathDir;
+	[Header("Settings")]
 
 	public string gameName;
-	public string dateTime;
-	public int sessionNumber;
+	private RaycastHit vision;
+	public float maxDistance;
+
+	GameObject previous;
+	float timer;
+
+	//canvas
+
+	[Header("Debugging")]
+	public Canvas DebugCanvas;
+	private Canvas c;
+	List<Canvas> canvases;
+
+	public KeyCode DebugKey;
+
+	bool devMode;
+	Text devModeText;
+
+	string pathDir;
+
+
+	string dateTime;
+	int sessionNumber;
+
+	public bool debugLog = true;
 	// Use this for initialization
 	void Start () {
 		timer = 0;
@@ -36,13 +43,16 @@ public class Looker : MonoBehaviour {
 		dateTime = System.DateTime.Now.ToString();
 		pathDir = Application.persistentDataPath + "/GameNani/LoadData/";
 
-		Debug.Log (pathDir);
+		if (debugLog) {
+			Debug.Log (pathDir);
+		}
 
 		if (!Directory.Exists (pathDir)) {
 			Directory.CreateDirectory (pathDir);
 		}
 
 		sessionNumber = Directory.GetFiles (pathDir).Length + 1;
+		devModeText = transform.GetChild (0).GetChild (0).GetComponent<Text> ();
 	}
 
 	void Switch() {
@@ -64,7 +74,7 @@ public class Looker : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (Input.GetKeyDown (key)) {
+		if (Input.GetKeyDown (DebugKey)) {
 			Switch ();
 		}
 
@@ -72,10 +82,10 @@ public class Looker : MonoBehaviour {
 			PrintData ();
 		}
 
-		Debug.DrawRay (transform.position, transform.forward * raylength, Color.red, 0f);
+		Debug.DrawRay (transform.position, transform.forward * maxDistance, Color.red, 0f);
 
 		Ray ray = new Ray (transform.position, transform.forward);
-		if (Physics.Raycast (ray, out vision, raylength, LayerMask.GetMask("Observable", "Default"))) {
+		if (Physics.Raycast (ray, out vision, maxDistance, LayerMask.GetMask("Observable", "Default"))) {
 			if (vision.collider.gameObject.layer == LayerMask.NameToLayer ("Observable")) {
 				if (vision.collider.gameObject == previous) {
 					//time it
@@ -84,7 +94,9 @@ public class Looker : MonoBehaviour {
 					LookDataManager.dictionary [previous.name].GetAverageWhile (timer);
 				} else {
 					if (previous != null) {
-						Debug.Log ("Looked at: " + previous.name + " for " + timer + "secs");
+						if (debugLog) {
+							Debug.Log ("Looked at: " + previous.name + " for " + timer + "secs");
+						}
 						LookDataManager.dictionary [previous.name].UpdateAverage (timer);
 						timer = 0;
 					}
@@ -94,7 +106,7 @@ public class Looker : MonoBehaviour {
 					if (previous != null) {
 						if (LookDataManager.addObject (previous, 0) == 0) {
 							//first time setup
-							c = Instantiate (canvas);
+							c = Instantiate (DebugCanvas);
 							c.GetComponent<LookatPlayer> ().parent = previous;
 							c.GetComponent<LookatPlayer> ().oname = previous.name;
 							c.GetComponent<LookatPlayer> ().data = LookDataManager.dictionary [previous.name];
@@ -111,7 +123,9 @@ public class Looker : MonoBehaviour {
 
 			} else if (previous != null){
 				//non observable object
-				Debug.Log ("Looked at: " + previous.name + " for " + timer + "secs");
+				if (debugLog) {
+					Debug.Log ("Looked at: " + previous.name + " for " + timer + "secs");
+				}
 
 				LookDataManager.dictionary [previous.name].UpdateAverage (timer);
 
@@ -121,7 +135,9 @@ public class Looker : MonoBehaviour {
 
 		}
 		else if (previous != null){
-			Debug.Log ("Looked at: " + previous.name + " for " + timer + "secs");
+			if (debugLog) {
+				Debug.Log ("Looked at: " + previous.name + " for " + timer + "secs");
+			}
 
 			LookDataManager.dictionary [previous.name].UpdateAverage (timer);
 
@@ -132,7 +148,9 @@ public class Looker : MonoBehaviour {
 
 	public void PrintData() {
 		string json = JsonUtility.ToJson (new PrintableData(LookDataManager.dictionary, gameName, dateTime));
-		Debug.Log (json);
+		if (debugLog) {
+			Debug.Log (json);
+		}
 
 		StreamWriter writer0 = new StreamWriter (pathDir + "session" + sessionNumber + ".JSON", false);
 		writer0.WriteLine (json);

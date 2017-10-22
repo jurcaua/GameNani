@@ -5,8 +5,11 @@ using TMPro;
 
 public class KeyChecker : MonoBehaviour {
 
+	[Header("Debugging")]
     public KeyCode debugKey;
     public bool checkAllKeys = false;
+
+	[TextArea(3, 10)]
     public string debugOutput = "KeyPressed: {0}\nCount: {1}\nLongestPress: {2}";
     public GameObject debugCanvasPrefab;
 
@@ -56,12 +59,7 @@ public class KeyChecker : MonoBehaviour {
         debugText.text = string.Format(debugOutput,
             keycode.ToString(), KeyPressDataManager.CountOf(keycode), KeyPressDataManager.LongestHoldTimeOf(keycode));
     }
-
-    void OnApplicationQuit() {
-//        WWWForm form = new WWWForm();
-//		form.AddField;
-        //HTTP.Sync.POST("localhost",);
-    }
+		
 }
 
 
