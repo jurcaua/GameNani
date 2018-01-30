@@ -1,3 +1,5 @@
+View devpost link (with pictures) at: https://devpost.com/software/thacks2 
+
 # **Game Nani**
 
 A data-oriented dev tool for game developers, by game developers. 
